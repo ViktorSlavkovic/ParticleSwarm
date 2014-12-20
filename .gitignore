@@ -13,6 +13,7 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+*.dll
 
 # Windows shortcuts
 *.lnk
@@ -41,3 +42,7 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+app/bin
+app/obj
+app/ParticleSwarm.layout
+app/font.ttf
