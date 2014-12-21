@@ -149,8 +149,7 @@ Uint32 callback_drawSurfaceFPS(Uint32 interval, void *param) {
     fps_texture = SDL_CreateTextureFromSurface(renderer, fps_surface);
     SDL_FreeSurface(fps_surface);
 
-    SDL_RemoveTimer(timer);
-    timer=SDL_AddTimer(1000, callback_drawSurfaceFPS, 0);
+    return interval;
 }
 
 //DONE
