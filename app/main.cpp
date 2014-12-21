@@ -36,10 +36,11 @@ double param_dt = 1;        //delta time
 
 bool param_disp_fps = false; //display_fps
 bool param_lock_fps = false; //lock fps
-int param_fps = 30; //fps
+int param_fps = 30;          //fps
 
-int cx,cy,cfps;
+int cx,cy,cfps;              //current mouse pos, fps counter
 
+//DONE
 double cost(double x, double y) {
     return (x-cx)*(x-cx)+(y-cy)*(y-cy);
 }
@@ -88,6 +89,7 @@ void Machine_Clear() {
 
     delete[] canvas;
 
+    SDL_RemoveTimer(timer);
     SDL_DestroyTexture(fps_texture);
 
     SDL_DestroyTexture(texture);
@@ -107,7 +109,7 @@ void Machine_setPixel(int x, int y, Uint8 color) {
 
 //DONE
 void Machine_Draw() {
-    for(int i=0; i<S->getSwarmSize(); i++) {
+    for(uint64_t i=0; i<S->getSwarmSize(); i++) {
         long long x = (int)(S->getParticlePos_x(i));
         long long y = (int)(S->getParticlePos_y(i));
         Machine_setPixel(x,y,0);
@@ -122,29 +124,40 @@ void Machine_Render() {
     //SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
 
-    //FPS
-    SDL_Rect dst;
-	dst.x = 5;
-	dst.y = 5;
-	SDL_QueryTexture(fps_texture, NULL, NULL, &dst.w, &dst.h);
-	if (param_disp_fps) SDL_RenderCopy(renderer, fps_texture, NULL, &dst);
+    //FPS !
+    if (param_disp_fps) {
+
+        SDL_sem* dataLock = SDL_CreateSemaphore( 1 );
+
+        SDL_Rect dst;
+        dst.x = 5;
+        dst.y = 5;
+        SDL_QueryTexture(fps_texture, NULL, NULL, &dst.w, &dst.h);
+        if (param_disp_fps) SDL_RenderCopy(renderer, fps_texture, NULL, &dst);
+        cfps++;
+
+        SDL_DestroySemaphore(dataLock);
+    }
     //end FPS
 
     SDL_RenderDrawLine(renderer,cx,cy-10,cx,cy+10);
     SDL_RenderDrawLine(renderer,cx-10,cy,cx+10,cy);
     SDL_RenderPresent(renderer);
 
-    cfps++;
 }
 
 //DONE
-Uint32 callback_drawSurfaceFPS(Uint32 interval, void *param) {
+Uint32 Machine_callbackFPS(Uint32 interval, void *param) {
+
+    if (!param_disp_fps) return 0;
+
     int pom=cfps;
     cfps=0;
+
     string s;
     ostringstream sout(s);
     sout<<"FPS: "<<pom;
-    //sout<<cx<<' '<<cy;
+
     fps_surface = TTF_RenderText_Blended(font, sout.str().c_str(), { 255, 0, 0, 255 });
     fps_texture = SDL_CreateTextureFromSurface(renderer, fps_surface);
     SDL_FreeSurface(fps_surface);
@@ -158,10 +171,9 @@ void Machine_Loop() {
     SDL_Event event;
     bool quit = false;
     bool lmbd = false;
-
     bool start=false;
 
-    timer = SDL_AddTimer(1000, callback_drawSurfaceFPS, 0);
+    timer = SDL_AddTimer(1000, Machine_callbackFPS, 0);
 
     Uint32 t1;
     double ft=1000.0/param_fps;
@@ -216,7 +228,7 @@ void Machine_Loop() {
 }
 
 //DONE
-void handle_args(int argc, char ** argv) {
+void APP_handle_args(int argc, char ** argv) {
     int i=1;
     while (i<argc) {
         if (strcmp(argv[i],"-swarm_size")==0) {
@@ -305,25 +317,10 @@ void handle_args(int argc, char ** argv) {
     }
 }
 
-void printParams() {
-    cout<<"--- PARAMETERS: ---"<<endl;
-    cout<<"     Swarm size "<<param_ss<<endl;
-    cout<<"     Cognitive "<<param_cog<<endl;
-    cout<<"     Social "<<param_soc<<endl;
-    cout<<"     Inertia "<<param_in<<endl;
-    cout<<"     dt "<<param_dt<<endl;
-    cout<<"     vmax "<<param_vmax<<endl;
-    cout<<"     Known best "<<param_kb<<endl;
-    cout<<"     Rand()*w "<<param_rw<<endl;
-    cout<<"     lock fps "<<param_lock_fps<<endl;
-    cout<<"     fps "<<param_fps<<endl;
-    cout<<"     display fps "<<param_disp_fps<<endl;
-}
-
 //DONE
 int main(int argc, char ** argv) {
 
-    handle_args(argc, argv);
+    APP_handle_args(argc, argv);
 
     Machine_Init();
 
@@ -331,8 +328,6 @@ int main(int argc, char ** argv) {
     S->setCognitive(param_cog);
     S->setSocial(param_soc);
     S->setInertia(param_in);
-
-    printParams();
 
     Machine_Loop();
 
