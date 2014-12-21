@@ -45,4 +45,7 @@ Temporary Items
 app/bin
 app/obj
 app/ParticleSwarm.layout
+app/ParticleSwarm.depend
 app/font.ttf
+gui/BUILD
+gui/ParticleSwarm.pro.user
