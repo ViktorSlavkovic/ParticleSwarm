@@ -118,6 +118,9 @@ void Machine_Draw() {
 
 //DONE
 void Machine_Render() {
+
+    SDL_sem* dataLock = SDL_CreateSemaphore( 1 );
+
     memset(canvas, 255, w*h*sizeof(Uint32));
     Machine_Draw();
     SDL_UpdateTexture(texture, NULL, canvas, w * sizeof(Uint32));
@@ -127,7 +130,7 @@ void Machine_Render() {
     //FPS !
     if (param_disp_fps) {
 
-        SDL_sem* dataLock = SDL_CreateSemaphore( 1 );
+
 
         SDL_Rect dst;
         dst.x = 5;
@@ -136,7 +139,7 @@ void Machine_Render() {
         if (param_disp_fps) SDL_RenderCopy(renderer, fps_texture, NULL, &dst);
         cfps++;
 
-        SDL_DestroySemaphore(dataLock);
+
     }
     //end FPS
 
@@ -144,6 +147,7 @@ void Machine_Render() {
     SDL_RenderDrawLine(renderer,cx-10,cy,cx+10,cy);
     SDL_RenderPresent(renderer);
 
+    SDL_DestroySemaphore(dataLock);
 }
 
 //DONE
