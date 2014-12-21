@@ -49,3 +49,8 @@ app/ParticleSwarm.depend
 app/font.ttf
 gui/BUILD
 gui/ParticleSwarm.pro.user
+deploy/call.txt
+deploy/font.ttf
+deploy/gui.exe
+deploy/ps.exe
+deploy/UPDATE.bat
