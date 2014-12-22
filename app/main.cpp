@@ -23,6 +23,8 @@ SDL_Texture * fps_texture;
 TTF_Font * font;
 SDL_TimerID timer;
 
+SDL_mutex* LOCK;
+
 opt::swarm * S;
 
 bool param_kb = false;      //known best
@@ -38,7 +40,8 @@ bool param_disp_fps = false; //display_fps
 bool param_lock_fps = false; //lock fps
 int param_fps = 30;          //fps
 
-int cx,cy,cfps;              //current mouse pos, fps counter
+int cx,cy;              //current mouse pos, fps counter
+volatile int cfps;
 
 //DONE
 double cost(double x, double y) {
@@ -82,10 +85,14 @@ void Machine_Init() {
         SDL_Quit();
         exit(-1);
     }
+
+    LOCK = SDL_CreateMutex();
 }
 
 //DONE
 void Machine_Clear() {
+
+    SDL_DestroyMutex( LOCK );
 
     delete[] canvas;
 
@@ -119,7 +126,7 @@ void Machine_Draw() {
 //DONE
 void Machine_Render() {
 
-    SDL_sem* dataLock = SDL_CreateSemaphore( 1 );
+    SDL_LockMutex( LOCK );
 
     memset(canvas, 255, w*h*sizeof(Uint32));
     Machine_Draw();
@@ -127,10 +134,8 @@ void Machine_Render() {
     //SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
 
-    //FPS !
+    //FPS
     if (param_disp_fps) {
-
-
 
         SDL_Rect dst;
         dst.x = 5;
@@ -139,7 +144,6 @@ void Machine_Render() {
         if (param_disp_fps) SDL_RenderCopy(renderer, fps_texture, NULL, &dst);
         cfps++;
 
-
     }
     //end FPS
 
@@ -147,13 +151,15 @@ void Machine_Render() {
     SDL_RenderDrawLine(renderer,cx-10,cy,cx+10,cy);
     SDL_RenderPresent(renderer);
 
-    SDL_DestroySemaphore(dataLock);
+    SDL_UnlockMutex( LOCK );
 }
 
 //DONE
 Uint32 Machine_callbackFPS(Uint32 interval, void *param) {
 
     if (!param_disp_fps) return 0;
+
+    SDL_LockMutex( LOCK );
 
     int pom=cfps;
     cfps=0;
@@ -165,6 +171,8 @@ Uint32 Machine_callbackFPS(Uint32 interval, void *param) {
     fps_surface = TTF_RenderText_Blended(font, sout.str().c_str(), { 255, 0, 0, 255 });
     fps_texture = SDL_CreateTextureFromSurface(renderer, fps_surface);
     SDL_FreeSurface(fps_surface);
+
+    SDL_UnlockMutex( LOCK );
 
     return interval;
 }
@@ -222,6 +230,7 @@ void Machine_Loop() {
                     }
                     break;
             }
+
 
             if (param_lock_fps) {
                 Uint32 t2=SDL_GetTicks();
