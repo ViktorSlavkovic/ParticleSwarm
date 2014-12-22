@@ -56,7 +56,9 @@ void swarm::update(double dt, double gb_x, double gb_y, bool rand_w) {
         px_old=x[i].getX();
         py_old=x[i].getY();
 
-        v[i]=v[i]*((rand_w)?((double)rand()/RAND_MAX):1)*w+(pb[i]-x[i])*c1*((double)rand()/RAND_MAX)+(gb-x[i])*c2*((double)rand()/RAND_MAX);
+        v[i] =  v[i] * w * ( (rand_w) ? ( (double)rand() / RAND_MAX ) : 1 )
+                + (pb[i]-x[i]) * c1 * ( (double)rand() / RAND_MAX )
+                + (gb-x[i]) * c2 * ( (double)rand() / RAND_MAX );
 
         if (v[i].modulus()>v_max)
             v[i]*=v_max/v[i].modulus();
@@ -83,7 +85,9 @@ void swarm::update(double dt, bool rand_w) {
         px_old=x[i].getX();
         py_old=x[i].getY();
 
-        v[i]=v[i]*((rand_w)?((double)rand()/RAND_MAX):1)*w+(pb[i]-x[i])*c1*((double)rand()/RAND_MAX)+(gb-x[i])*c2*((double)rand()/RAND_MAX);
+        v[i] =  v[i] * w * ( (rand_w) ? ( (double)rand() / RAND_MAX ) : 1 )
+                + (pb[i]-x[i]) * c1 * ( (double)rand() / RAND_MAX )
+                + (gb-x[i]) * c2 * ( (double)rand() / RAND_MAX );
 
         if (v[i].modulus()>v_max)
             v[i]*=v_max/v[i].modulus();
