@@ -255,46 +255,51 @@ void APP_handle_args(int argc, char ** argv) {
         }
         if (strcmp(argv[i],"-cognitive")==0) {
             i++;
-            if (i>=argc || (param_cog=strtod(argv[i],0))==0) {
+            if (i>=argc) {
                 cout<<"ERROR: Check argument: "<<argv[i-1]<<endl;
                 exit(0);
             }
+            else param_cog=strtod(argv[i],0);
             i++;
             continue;
         }
         if (strcmp(argv[i],"-social")==0) {
             i++;
-            if (i>=argc || (param_soc=strtod(argv[i],0))==0) {
+            if (i>=argc) {
                 cout<<"ERROR: Check argument: "<<argv[i-1]<<endl;
                 exit(0);
             }
+            else param_soc=strtod(argv[i],0);
             i++;
             continue;
         }
         if (strcmp(argv[i],"-inertia")==0) {
             i++;
-            if (i>=argc || (param_in=strtod(argv[i],0))==0) {
+            if (i>=argc) {
                 cout<<"ERROR: Check argument: "<<argv[i-1]<<endl;
                 exit(0);
             }
+            else param_in=strtod(argv[i],0);
             i++;
             continue;
         }
         if (strcmp(argv[i],"-v_max")==0) {
             i++;
-            if (i>=argc || (param_vmax=strtod(argv[i],0))==0) {
+            if (i>=argc) {
                 cout<<"ERROR: Check argument: "<<argv[i-1]<<endl;
                 exit(0);
             }
+            else param_vmax=strtod(argv[i],0);
             i++;
             continue;
         }
         if (strcmp(argv[i],"-dt")==0) {
             i++;
-            if (i>=argc || (param_dt=strtod(argv[i],0))==0) {
+            if (i>=argc) {
                 cout<<"ERROR: Check argument: "<<argv[i-1]<<endl;
                 exit(0);
             }
+            else param_dt=strtod(argv[i],0);
             i++;
             continue;
         }
